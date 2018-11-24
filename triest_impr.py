@@ -2,7 +2,7 @@ import random
 from edge_sample import EdgeSample
 from collections import defaultdict
 
-class TriestBase:
+class TriestImpr:
     def __init__(self,M):
         self._M = M
         self._sample = EdgeSample()
@@ -15,7 +15,6 @@ class TriestBase:
             return True
         elif self.flip_biased_coin():
             u_dash, v_dash = self._sample.remove_random_edge()
-            self.update_counters(u_dash,v_dash,'-')
             return True
         return False
 
@@ -23,42 +22,29 @@ class TriestBase:
         common_neighborhood = self._sample.get_intersection_neighborhood(u,v)
         if not len(common_neighborhood):
             return
+
+        increment_t = max(1, int(((self._t-1)*(self._t-2))/(self._M * (self._M - 1)))) 
+
         for c in common_neighborhood:
 
             if op == '+':
-                self._globalT += 1
+                self._globalT += increment_t
                 
                 if c in self._localT:
-                    self._localT[c] += 1
+                    self._localT[c] += increment_t
                 else:
-                    self._localT[c] = 1
+                    self._localT[c] = increment_t
 
                 if u in self._localT:
-                    self._localT[u] += 1
+                    self._localT[u] += increment_t
                 else:
-                    self._localT[u] =1
+                    self._localT[u] = increment_t
 
                 if v in self._localT:
-                    self._localT[v] += 1
+                    self._localT[v] += increment_t
                 else:
-                    self._localT[v] = 1
+                    self._localT[v] = increment_t
 
-            elif op == '-':
-                self._globalT -= 1
-                
-                self._localT[c] -= 1
-
-                if self._localT[c] == 0:
-                    self._localT.pop(c)
-
-                self._localT[u] -= 1
-                
-                if self._localT[u] == 0:
-                    self._localT.pop(u)
-
-                self._localT[v] -= 1
-                if self._localT[v] == 0:
-                    self._localT.pop(v)
 
     def flip_biased_coin(self):
         head_prob = random.random()
@@ -69,12 +55,10 @@ class TriestBase:
             return False
 
     def return_counters(self):
-        estimate = max(1, (self._t * (self._t - 1) * (self._t - 2))/(self._M * (self._M - 1) * (self._M - 2)))
-        
-        return {'global':int(estimate * self._globalT),'local':self._localT}
+        return {'global':self._globalT,'local':self._localT}
 
     def run(self,u,v):
         self._t += 1
+        self.update_counters(u,v,'+')
         if self.sample_edge(u,v):
             self._sample.add_edge(u,v)
-            self.update_counters(u,v,'+')
