@@ -21,7 +21,6 @@ class TriestBase:
 
     def update_counters(self,u,v,op):
         common_neighborhood = self._sample.get_intersection_neighborhood(u,v)
-        
         if not len(common_neighborhood):
             return
 
@@ -61,7 +60,8 @@ class TriestBase:
                 self._localT[v] -= 1
                 if self._localT[v] == 0:
                     self._localT.pop(v)
-
+        print("Global",self._globalT)
+        print("Local",self._localT)
 
     def flip_biased_coin(self):
         head_prob = random.random()
@@ -82,5 +82,6 @@ class TriestBase:
         print("u: {} and v: {}".format(u,v))
         if self.sample_edge(u,v):
             self._sample.add_edge(u,v)
+            self.update_counters(u,v,'+')
 
         print("============RUN {} END============".format(self._t))
