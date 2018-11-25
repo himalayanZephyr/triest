@@ -20,7 +20,8 @@ class TriestImpr:
 
     def update_counters(self,u,v,op):
         common_neighborhood = self._sample.get_intersection_neighborhood(u,v)
-        if not len(common_neighborhood):
+        
+        if not common_neighborhood:
             return
 
         increment_t = max(1, int(((self._t-1)*(self._t-2))/(self._M * (self._M - 1)))) 

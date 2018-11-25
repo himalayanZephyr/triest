@@ -21,8 +21,10 @@ class TriestBase:
 
     def update_counters(self,u,v,op):
         common_neighborhood = self._sample.get_intersection_neighborhood(u,v)
-        if not len(common_neighborhood):
+        
+        if not common_neighborhood:
             return
+
         for c in common_neighborhood:
 
             if op == '+':
