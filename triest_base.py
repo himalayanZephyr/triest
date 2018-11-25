@@ -72,8 +72,13 @@ class TriestBase:
 
     def return_counters(self):
         estimate = max(1, (self._t * (self._t - 1) * (self._t - 2))/(self._M * (self._M - 1) * (self._M - 2)))
-        
-        return {'global':int(estimate * self._globalT),'local':self._localT}
+
+        global_estimate = int(estimate * self._globalT)
+
+        for key in self._localT:
+            self._localT[key] = int(self._localT[key] * estimate)
+
+        return {'global':global_estimate,'local':self._localT}
 
     def run(self,u,v):
         self._t += 1
